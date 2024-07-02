@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ZodTypeAny, z } from "zod";
 import { EXAMPLE_PROMPT, EXAMPLE_ANSWER } from "./prompts";
 
-const genAi = new GoogleGenerativeAI(process.env.GOOGLE!);
+const genAi = new GoogleGenerativeAI(process.env.GEMINI!);
 const model = genAi.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const determineSchemaType = (schema: any): string => {

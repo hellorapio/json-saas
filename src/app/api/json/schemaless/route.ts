@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { EXAMPLE_PROMPT, EXAMPLE_ANSWER } from "./prompts";
 
-const genAi = new GoogleGenerativeAI(process.env.GOOGLE!);
+const genAi = new GoogleGenerativeAI(process.env.GEMINI!);
 const model = genAi.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 type PromiseExecutor<T> = (
@@ -74,7 +74,6 @@ export const POST = async (req: NextRequest) => {
 
         const result = await chat.sendMessage(content);
         const text = result.response.text();
-        console.log(text);
         const validationResult = JSON.parse(text);
         return resolve(validationResult);
       } catch (err) {
