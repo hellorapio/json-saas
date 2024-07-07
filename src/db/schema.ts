@@ -1,16 +1,22 @@
+import { relations } from "drizzle-orm";
 import {
   pgTable,
   varchar,
   uuid,
   text,
   integer,
+  boolean,
   timestamp,
+  pgEnum,
+  primaryKey,
 } from "drizzle-orm/pg-core";
+import { AdapterAccountType } from "next-auth/adapters";
 
 export const usersTable = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 100 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
   password: text("password"),
 
   // Other user Related Fields (role,)
@@ -21,12 +27,62 @@ export const usersTable = pgTable("users", {
     .$onUpdate(() => new Date()),
 });
 
-// export const accountsTable = pgTable("accounts", {});
+export const accountsTable = pgTable(
+  "accounts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccountType>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  (account) => ({
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
+  })
+);
 
-export const userPreferences = pgTable("user_preferences", {
+export const verificationTokensTable = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (verificationToken) => ({
+    compositePk: primaryKey({
+      columns: [verificationToken.identifier, verificationToken.token],
+    }),
+  })
+);
+
+export const userRelations = relations(usersTable, ({ one, many }) => ({
+  userPreferences: one(userPreferencesTable),
+  qouta: one(qoutasTable),
+  api: one(apisTable),
+  invoices: many(invoicesTable),
+  accounts: many(accountsTable),
+  generationsHistory: many(generationsHistoryTable),
+}));
+
+export const userPreferencesTable = pgTable("user_preferences", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").references(() => usersTable.id),
-  // User Preferences Columns
+  userId: uuid("user_id")
+    .references(() => usersTable.id)
+    .notNull(),
+  emailNotifications: boolean("email_notifications")
+    .notNull()
+    .default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -58,6 +114,9 @@ export const qoutasTable = pgTable("qoutas", {
 
 export const invoicesTable = pgTable("invoices", {
   id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .references(() => usersTable.id)
+    .notNull(),
   amountDue: integer("amount_due").notNull(),
   credits: integer("credits").notNull(),
   status: varchar("status", { length: 20 }).default("unpaid"),
