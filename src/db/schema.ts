@@ -18,9 +18,8 @@ export const usersTable = pgTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   password: text("password"),
-
-  // Other user Related Fields (role,)
-
+  image: text("image"),
+  role: text("role").default("user"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -28,9 +27,8 @@ export const usersTable = pgTable("users", {
 });
 
 export const accountsTable = pgTable(
-  "accounts",
+  "user_accounts",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
     userId: uuid("user_id")
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
@@ -47,7 +45,7 @@ export const accountsTable = pgTable(
   },
   (account) => ({
     compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
+      columns: [account.provider, account.userId],
     }),
   })
 );
