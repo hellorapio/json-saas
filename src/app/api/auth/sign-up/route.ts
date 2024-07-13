@@ -8,18 +8,24 @@ export async function POST(req: NextRequest) {
   const validated = await signUpSchema.safeParseAsync(body);
 
   if (!validated.success)
-    return NextResponse.json({ err: "Sent data is not Valid" });
+    return NextResponse.json(
+      { error: "Sent data is not Valid" },
+      { status: 400 }
+    );
 
   const { email, password: plainPassword, name } = validated.data;
 
   if (await getUserByEmail(email))
-    return NextResponse.json({ error: "Email already Exists" });
+    return NextResponse.json(
+      { error: "Email already Exists" },
+      { status: 400 }
+    );
 
   const password = await bcrypt.hash(plainPassword, 10);
 
   await createUser({ email, password, name });
 
-  // Send Email Verification 
+  // Send Email Verification
 
   return NextResponse.json({ status: "success", data: "User created" });
 }

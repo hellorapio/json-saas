@@ -15,15 +15,32 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useSignup } from "@/hooks/auth/sign-up";
+import { useToast } from "./ui/use-toast";
+import { ToastAction } from "./ui/toast";
 
 export default function SignUpForm() {
+  const { signup } = useSignup();
+  const { toast } = useToast();
+
   const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: { email: "", password: "", name: "" },
   });
 
   async function handleSubmit(values: z.infer<typeof signUpSchema>) {
-    console.log(values);
+    try {
+      await signup(values);
+      toast({
+        variant: "default",
+        title: "Account created Successfully",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: (error as Error).message,
+      });
+    }
   }
 
   return (
@@ -40,7 +57,11 @@ export default function SignUpForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Full Name" {...field} />
+                  <Input
+                    placeholder="Full Name"
+                    {...field}
+                    disabled={form.formState.isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -53,7 +74,11 @@ export default function SignUpForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="email" {...field} />
+                  <Input
+                    placeholder="email"
+                    {...field}
+                    disabled={form.formState.isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -70,14 +95,19 @@ export default function SignUpForm() {
                     placeholder="password"
                     type="password"
                     {...field}
+                    disabled={form.formState.isSubmitting}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" variant={"default"} className="">
-            Signup
+          <Button
+            type="submit"
+            variant={"default"}
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? "Signing up" : "Sign up"}
           </Button>
           <div>
             <Link
