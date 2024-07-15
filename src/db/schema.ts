@@ -4,6 +4,7 @@ import {
   varchar,
   uuid,
   text,
+  unique,
   integer,
   boolean,
   timestamp,
@@ -11,6 +12,11 @@ import {
   primaryKey,
 } from "drizzle-orm/pg-core";
 import { AdapterAccountType } from "next-auth/adapters";
+
+export const verificationEnum = pgEnum("verification_types", [
+  "Email-Verification",
+  "Password-Reset",
+]);
 
 export const usersTable = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -51,16 +57,19 @@ export const accountsTable = pgTable(
 );
 
 export const verificationTokensTable = pgTable(
-  "verificationToken",
+  "verification_tokens",
   {
-    identifier: text("identifier").notNull(),
+    id: uuid("id").primaryKey().defaultRandom(),
+    identifier: text("identifier").notNull().unique(),
     token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
+    tokenType: verificationEnum("token_type").notNull(),
   },
   (verificationToken) => ({
-    compositePk: primaryKey({
-      columns: [verificationToken.identifier, verificationToken.token],
-    }),
+    uniqueIdx: unique().on(
+      verificationToken.tokenType,
+      verificationToken.identifier
+    ),
   })
 );
 

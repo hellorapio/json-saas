@@ -1,5 +1,5 @@
 {
-  "id": "b83d93ee-88ad-4a45-9722-c363da249027",
+  "id": "00907785-b8ba-4328-8500-ce0fd6e9f565",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -428,6 +428,19 @@
           "primaryKey": false,
           "notNull": false
         },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'user'"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -456,10 +469,17 @@
         }
       }
     },
-    "public.verificationToken": {
-      "name": "verificationToken",
+    "public.verification_tokens": {
+      "name": "verification_tokens",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
         "identifier": {
           "name": "identifier",
           "type": "text",
@@ -477,23 +497,47 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
+        },
+        "token_type": {
+          "name": "token_type",
+          "type": "verification_types",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "verificationToken_identifier_token_pk": {
-          "name": "verificationToken_identifier_token_pk",
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "verification_tokens_identifier_unique": {
+          "name": "verification_tokens_identifier_unique",
+          "nullsNotDistinct": false,
           "columns": [
-            "identifier",
-            "token"
+            "identifier"
+          ]
+        },
+        "verification_tokens_token_type_identifier_unique": {
+          "name": "verification_tokens_token_type_identifier_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token_type",
+            "identifier"
           ]
         }
-      },
-      "uniqueConstraints": {}
+      }
     }
   },
-  "enums": {},
+  "enums": {
+    "public.verification_types": {
+      "name": "verification_types",
+      "schema": "public",
+      "values": [
+        "Email-Verification",
+        "Password-Reset"
+      ]
+    }
+  },
   "schemas": {},
   "_meta": {
     "columns": {},
