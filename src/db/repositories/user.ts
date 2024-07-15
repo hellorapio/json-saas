@@ -11,5 +11,12 @@ export async function getUserByEmail(email: string) {
     where: eq(usersTable.email, email),
   });
 
-  return !!user;
+  return user;
+}
+
+export async function updateUserById(
+  id: string,
+  data: Record<string, any>
+) {
+  await db.update(usersTable).set(data).where(eq(usersTable.id, id));
 }

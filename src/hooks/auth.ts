@@ -1,4 +1,4 @@
-import signUp from "@/services/signUp";
+import { signUp } from "@/services/auth";
 import { useMutation } from "@tanstack/react-query";
 
 export function useSignup() {

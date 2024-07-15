@@ -1,4 +1,4 @@
-export default async function signUp(body: object) {
+export async function signUp(body: object) {
   const res = await fetch("/api/auth/sign-up", {
     method: "POST",
     body: JSON.stringify(body),
