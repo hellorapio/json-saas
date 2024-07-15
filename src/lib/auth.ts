@@ -30,12 +30,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     accountsTable: accountsTable,
     verificationTokensTable: verificationTokensTable,
   }),
+  pages: {
+    signIn: "/login",
+    error: "/error",
+  },
   events: {
     linkAccount: async ({ user }) => {
       console.log(user);
-      await updateUserById(user.id, {
-        emailVerification: new Date(),
-      });
+      if (user.id)
+        await updateUserById(user.id, {
+          emailVerification: new Date(),
+        });
     },
   },
 

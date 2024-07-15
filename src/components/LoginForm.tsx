@@ -18,8 +18,12 @@ import Link from "next/link";
 import { useToast } from "./ui/use-toast";
 import { loginAction } from "@/actions/auth";
 import OAuth from "./OAuth";
+import { useSearchParams } from "next/navigation";
+import FormError from "./FormError";
 
 export default function LoginForm() {
+  const params = useSearchParams();
+  const err = params.get("error");
   const { toast } = useToast();
 
   const form = useForm({
@@ -85,6 +89,7 @@ export default function LoginForm() {
                 </FormItem>
               )}
             />
+            {err && <FormError message={err}></FormError>}
             <Button
               type="submit"
               variant={"default"}
