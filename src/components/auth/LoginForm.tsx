@@ -68,7 +68,17 @@ export default function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <div className="flex justify-between items-center">
+                    <FormLabel>Password</FormLabel>
+                    <Button
+                      variant="link"
+                      size={"sm"}
+                      className="p-0 m-0"
+                      asChild
+                    >
+                      <Link href="/reset">Forgot password?</Link>
+                    </Button>
+                  </div>
                   <FormControl>
                     <Input
                       placeholder="password"

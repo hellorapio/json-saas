@@ -17,9 +17,11 @@ import {
   Form,
 } from "../ui/form";
 import CommonError from "./CommonError";
+import Success from "./Success";
 
 export default function ResetForm() {
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const form = useForm({
     resolver: zodResolver(ResetSchema),
     defaultValues: { email: "" },
@@ -27,9 +29,14 @@ export default function ResetForm() {
 
   async function handleSubmit(values: z.infer<typeof ResetSchema>) {
     setError("");
-    let err = "";
-    if (err) {
-      setError(err);
+    setSuccess("");
+
+    const action = await ResetAction(values);
+
+    if (action.error) {
+      setError(action.error);
+    } else {
+      setSuccess(action.message as string);
     }
   }
 
@@ -60,6 +67,7 @@ export default function ResetForm() {
             />
 
             {error && <CommonError message={error}></CommonError>}
+            {success && <Success message={success}></Success>}
 
             <Button
               type="submit"
