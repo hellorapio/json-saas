@@ -30,16 +30,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     accountsTable: accountsTable,
     verificationTokensTable: verificationTokensTable,
   }),
+
   pages: {
     signIn: "/login",
     error: "/error",
   },
+
   events: {
     linkAccount: async ({ user }) => {
-      console.log(user);
       if (user.id)
         await updateUserById(user.id, {
-          emailVerification: new Date(),
+          emailVerified: new Date(),
         });
     },
   },
@@ -59,6 +60,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.role = token.role as string;
       }
       return session;
+    },
+
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") return true;
+
+      // The user should be able to login 
+      // and resend verification from the settings
+      // //@ts-ignore
+      // if (!user.emailVerified) return false;
+
+      return true;
     },
   },
   useSecureCookies: process.env.NODE_ENV === "production",

@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
 import { loginSchema } from "@/lib/zod";
 import { redirection } from "@/routes";
 import { AuthError } from "next-auth";
@@ -23,7 +23,7 @@ export const loginAction = async (values: z.infer<typeof loginSchema>) => {
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return { error: "Invalid credentials" };
+          return { error: "Incorrect email or password" };
         case "CallbackRouteError":
           return { error: "Something went Wrong!" };
         default:
@@ -35,4 +35,7 @@ export const loginAction = async (values: z.infer<typeof loginSchema>) => {
   }
 };
 
-export const signOutAction = async () => {};
+export const signOutAction = async () => {
+  "use server";
+  await signOut();
+};

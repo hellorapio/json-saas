@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useSignup } from "@/hooks/auth";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "../ui/use-toast";
 import OAuth from "./OAuth";
 
 export default function SignUpForm() {
@@ -30,10 +30,10 @@ export default function SignUpForm() {
 
   async function handleSubmit(values: z.infer<typeof signUpSchema>) {
     try {
-      await signup(values);
+      const data = await signup(values);
       toast({
         variant: "default",
-        title: "Account created Successfully",
+        title: data.data,
       });
     } catch (error) {
       toast({

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Rubik } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Providers } from "@/components/Providers";
+import { Providers } from "@/components/auth/Providers";
 import { Toaster } from "@/components/ui/toaster";
 
 const rubik = Rubik({
