@@ -10,3 +10,7 @@ export const loginSchema = z.object({
   email: z.string().email("Invalid Email Format").trim().toLowerCase(),
   password: z.string().min(3, "Invalid Password"),
 });
+
+export const ResetSchema = z.object({
+  email: z.string().email("Invalid Email Format").trim().toLowerCase(),
+});

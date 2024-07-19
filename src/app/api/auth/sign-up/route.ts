@@ -1,6 +1,7 @@
 import { createToken } from "@/db/repositories/tokens";
 import { createUser, getUserByEmail } from "@/db/repositories/user";
 import { mail } from "@/lib/email";
+import { linkBuilder } from "@/lib/utils";
 import { signUpSchema } from "@/lib/zod";
 import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
 
   const token = await createToken(email, "Email-Verification");
 
-  await mail(email, token);
+  await mail(email, linkBuilder(token, "Email-Verification"));
 
   return NextResponse.json({
     status: "success",
