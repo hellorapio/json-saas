@@ -9,6 +9,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export function linkBuilder(token: string, type: TokenType) {
   if (type === "Email-Verification")
-    return `http://localhost:8082/email-verification/${token}`;
-  else return `http://localhost:8082/reset/${token}`;
+    return `${
+      process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:8082"
+    }/email-verification/${token}`;
+  else
+    return `${
+      process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:8082"
+    }/reset/${token}`;
 }
