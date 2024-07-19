@@ -15,7 +15,7 @@ export default async function EmailVerification({
       {verifiedToken ? (
         <Success message="Your email has been verified" />
       ) : (
-        <CommonError message="Invalid or expired token"></CommonError>
+        <CommonError message="Your token is either Invalid or expired token"></CommonError>
       )}
     </div>
   );

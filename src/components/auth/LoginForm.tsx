@@ -15,34 +15,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useToast } from "../ui/use-toast";
 import { loginAction } from "@/actions/auth";
 import OAuth from "./OAuth";
 import { useSearchParams } from "next/navigation";
 import LoginError from "./LoginError";
+import { useState } from "react";
 
 export default function LoginForm() {
   const params = useSearchParams();
-  const err = params.get("error");
-  const { toast } = useToast();
-
+  const paramError = params.get("error");
+  const [error, setError] = useState("");
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
   async function handleSubmit(values: z.infer<typeof loginSchema>) {
+    setError("");
     const err = (await loginAction(values))?.error;
     if (err) {
-      toast({
-        variant: "destructive",
-        title: err,
-      });
-    } else {
-      toast({
-        variant: "default",
-        title: "Logged In Successfully",
-      });
+      setError(err);
     }
   }
 
@@ -90,7 +82,8 @@ export default function LoginForm() {
               )}
             />
 
-            {err && <LoginError message={err}></LoginError>}
+            {paramError && <LoginError message={paramError}></LoginError>}
+            {error && <LoginError message={error}></LoginError>}
 
             <Button
               type="submit"

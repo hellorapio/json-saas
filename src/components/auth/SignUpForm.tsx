@@ -16,12 +16,15 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useSignup } from "@/hooks/auth";
-import { useToast } from "../ui/use-toast";
 import OAuth from "./OAuth";
+import { useState } from "react";
+import CommonError from "./CommonError";
+import Success from "./Success";
 
 export default function SignUpForm() {
   const { signup } = useSignup();
-  const { toast } = useToast();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const form = useForm({
     resolver: zodResolver(signUpSchema),
@@ -29,17 +32,13 @@ export default function SignUpForm() {
   });
 
   async function handleSubmit(values: z.infer<typeof signUpSchema>) {
+    setError("");
+    setSuccess("");
     try {
       const data = await signup(values);
-      toast({
-        variant: "default",
-        title: data.data,
-      });
+      setSuccess(data.data);
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: (error as Error).message,
-      });
+      setError((error as Error).message);
     }
   }
 
@@ -103,6 +102,10 @@ export default function SignUpForm() {
                 </FormItem>
               )}
             />
+
+            {error && <CommonError message={error} />}
+            {success && <Success message={success} />}
+
             <Button
               type="submit"
               variant={"default"}

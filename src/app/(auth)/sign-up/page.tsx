@@ -1,4 +1,5 @@
 import SignUpForm from "@/components/auth/SignUpForm";
+import { PulseLoader } from "react-spinners";
 
 export const metadata = {
   title: "Sign up to our app",

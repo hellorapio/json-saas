@@ -15,9 +15,7 @@ export async function verifyEmail(token: string) {
 
   if (dbToken.length === 0) return false;
 
-  console.log(
-    await deleteToken(dbToken[0].identifier, dbToken[0].tokenType)
-  );
+  await deleteToken(dbToken[0].identifier, dbToken[0].tokenType);
   await updateUserByEmail(dbToken[0].identifier, {
     emailVerified: new Date(),
   });
