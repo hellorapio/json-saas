@@ -17,13 +17,11 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { loginAction } from "@/actions/auth";
 import OAuth from "./OAuth";
-import { useSearchParams } from "next/navigation";
-import LoginError from "./LoginError";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import LoginParamError from "./LoginParamError";
+import CommonError from "./CommonError";
 
 export default function LoginForm() {
-  const params = useSearchParams();
-  const paramError = params.get("error");
   const [error, setError] = useState("");
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -91,9 +89,10 @@ export default function LoginForm() {
                 </FormItem>
               )}
             />
-
-            {paramError && <LoginError message={paramError}></LoginError>}
-            {error && <LoginError message={error}></LoginError>}
+            <Suspense>
+              <LoginParamError />
+            </Suspense>
+            {error && <CommonError message={error}></CommonError>}
 
             <Button
               type="submit"
