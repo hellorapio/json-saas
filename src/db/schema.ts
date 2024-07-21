@@ -60,7 +60,7 @@ export const verificationTokensTable = pgTable(
   "verification_tokens",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    identifier: text("identifier").notNull().unique(),
+    identifier: text("identifier").notNull(),
     token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
     tokenType: verificationEnum("token_type").notNull(),

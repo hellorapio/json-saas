@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs"
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -15,5 +16,9 @@ export function linkBuilder(token: string, type: TokenType) {
   else
     return `${
       process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:8082"
-    }/reset/${token}`;
+    }/new-password/${token}`;
+}
+
+export async function hashPassword(password: string) {
+  return await bcrypt.hash(password, 10)
 }

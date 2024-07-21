@@ -3,6 +3,7 @@ import { auth } from "./lib/auth";
 import {
   apiAuthPrefix,
   authRoutes,
+  dynamicAuthRoutes,
   dynamicPublicRoutes,
   publicRoutes,
   redirection,
@@ -19,6 +20,11 @@ export default auth((req) => {
   if (pathname.startsWith(apiAuthPrefix)) return NextResponse.next();
 
   if (publicRoutes.includes(pathname)) return NextResponse.next();
+
+  if (dynamicAuthRoutes.some((route) => pathname.startsWith(route))) {
+    if (!user) return NextResponse.next();
+    else return NextResponse.redirect(new URL(redirection, nextUrl));
+  }
 
   if (authRoutes.includes(pathname)) {
     if (!user) return NextResponse.next();

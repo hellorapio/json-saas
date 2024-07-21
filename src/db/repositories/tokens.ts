@@ -23,6 +23,22 @@ export async function verifyEmail(token: string) {
   return true;
 }
 
+export async function updatePasswordByToken(
+  token: string,
+  password: string
+) {
+  const dbToken = await findTokenByTokenAndType(token, "Password-Reset");
+
+  if (dbToken.length === 0) return false;
+
+  await deleteToken(dbToken[0].identifier, dbToken[0].tokenType);
+  await updateUserByEmail(dbToken[0].identifier, {
+    password,
+  });
+
+  return true;
+}
+
 export async function deleteToken(identifier: string, type: TokenType) {
   return await db
     .delete(verificationTokensTable)

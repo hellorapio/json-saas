@@ -1,11 +1,15 @@
 "use server";
 
-import { createToken } from "@/db/repositories/tokens";
-import { getUserByEmail } from "@/db/repositories/user";
+import {
+  createToken,
+  findTokenByTokenAndType,
+  updatePasswordByToken,
+} from "@/db/repositories/tokens";
+import { getUserByEmail, updateUserByEmail } from "@/db/repositories/user";
 import { signIn, signOut } from "@/lib/auth";
 import { mail } from "@/lib/email";
-import { linkBuilder } from "@/lib/utils";
-import { loginSchema, ResetSchema } from "@/lib/zod";
+import { hashPassword, linkBuilder } from "@/lib/utils";
+import { loginSchema, NewPasswordSchema, ResetSchema } from "@/lib/zod";
 import { redirection } from "@/routes";
 import { AuthError } from "next-auth";
 import { z } from "zod";
@@ -58,4 +62,25 @@ export const ResetAction = async (values: z.infer<typeof ResetSchema>) => {
   await mail(email, linkBuilder(token, "Password-Reset"));
 
   return { message: "Reset Link has been sent!" };
+};
+
+export const NewPasswordAction = async (
+  values: z.infer<typeof NewPasswordSchema>,
+  token: string
+) => {
+  const validated = await NewPasswordSchema.safeParseAsync(values);
+  if (!validated.success) return { error: "Data is not valid" };
+
+  const { password: plainPassword } = validated.data;
+
+  const password = await hashPassword(plainPassword);
+
+  const isChanged = await updatePasswordByToken(token, password);
+
+  if (!isChanged)
+    return {
+      error: "You have changed your password once or the token expired",
+    };
+
+  return { message: "Password Successfully Changed" };
 };

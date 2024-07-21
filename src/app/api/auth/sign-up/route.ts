@@ -1,7 +1,7 @@
 import { createToken } from "@/db/repositories/tokens";
 import { createUser, getUserByEmail } from "@/db/repositories/user";
 import { mail } from "@/lib/email";
-import { linkBuilder } from "@/lib/utils";
+import { hashPassword, linkBuilder } from "@/lib/utils";
 import { signUpSchema } from "@/lib/zod";
 import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
 
-  const password = await bcrypt.hash(plainPassword, 10);
+  const password = await hashPassword(plainPassword);
 
   await createUser({ email, password, name });
 
